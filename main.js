@@ -23,8 +23,8 @@ const game = new Phaser.Game(config);
 
 function preload() {
     // Load assets here (e.g., images, sprites)
-    this.load.image('background', 'assets/background.png'); // Example background
-    this.load.image('cannabinoid', 'assets/cannabinoid.png'); // Example player sprite
+    this.load.image('background', 'background.png'); // Example background
+    this.load.image('cannabinoid', 'cannabinoid.png'); // Example player sprite
 }
 
 function create() {
