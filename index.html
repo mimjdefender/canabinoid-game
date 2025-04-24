@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cannabinoid Receptor Game</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Righteous&display=swap');
+        
+        :root {
+            --primary-green: #4a8505;
+            --light-green: #b3ff9d;
+            --dark-green: #1a472a;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, var(--dark-green), #2d5a3f);
+            font-family: 'Righteous', cursive;
+            color: #fff;
+            position: relative;
+            overflow: hidden;
+            padding: 20px;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%231a472a"><path d="M12 2C9 7 7 9 2 12c5 3 7 5 10 10 3-5 5-7 10-10-5-3-7-5-10-10z"/></svg>');
+            background-size: 100px 100px;
+            opacity: 0.1;
+            z-index: -1;
+            animation: float 20s linear infinite;
+        }
+
+        @keyframes float {
+            0% { background-position: 0 0; }
+            100% { background-position: 100px 100px; }
+        }
+
+        .game-container {
+            text-align: center;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(74, 133, 5, 0.5);
+            border: 2px solid var(--primary-green);
+            max-width: 100%;
+            width: fit-content;
+        }
+
+        #gameCanvas {
+            border: 3px solid var(--primary-green);
+            border-radius: 10px;
+            background: linear-gradient(to bottom, #2d5a3f, var(--dark-green));
+            box-shadow: 0 0 15px rgba(74, 133, 5, 0.5);
+            max-width: 100%;
+            height: auto;
+        }
+
+        .score {
+            font-size: clamp(24px, 4vw, 32px);
+            margin: 10px 0;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            color: var(--light-green);
+        }
+
+        .controls {
+            margin: 15px 0;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            border: 1px solid var(--primary-green);
+        }
+
+        .controls p {
+            margin: 8px 0;
+            font-size: clamp(14px, 3vw, 18px);
+            color: var(--light-green);
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+        }
+
+        .title {
+            font-size: clamp(28px, 5vw, 36px);
+            margin-bottom: 20px;
+            color: var(--light-green);
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            position: relative;
+            display: inline-block;
+        }
+
+        .instructions {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 20px;
+            border: 1px solid var(--primary-green);
+        }
+
+        .instructions h2 {
+            color: var(--light-green);
+            margin-bottom: 10px;
+            font-size: clamp(20px, 4vw, 24px);
+        }
+
+        .instructions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            text-align: left;
+        }
+
+        .instruction-section {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 15px;
+            border-radius: 8px;
+        }
+
+        .instruction-section h3 {
+            color: var(--primary-green);
+            margin-bottom: 10px;
+            font-size: clamp(16px, 3vw, 20px);
+        }
+
+        .instruction-section ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .instruction-section li {
+            margin: 8px 0;
+            font-size: clamp(14px, 2.5vw, 16px);
+            display: flex;
+            align-items: center;
+        }
+
+        .instruction-section li::before {
+            content: '🌿';
+            margin-right: 8px;
+        }
+
+        .mobile-controls {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .mobile-controls {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 10px;
+                margin-top: 15px;
+            }
+
+            .mobile-btn {
+                background: var(--primary-green);
+                border: none;
+                padding: 15px;
+                border-radius: 8px;
+                color: white;
+                font-family: 'Righteous', cursive;
+                font-size: 18px;
+                touch-action: manipulation;
+            }
+
+            .mobile-btn:active {
+                background: var(--dark-green);
+            }
+
+            .mobile-move-controls {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+            }
+        }
+
+        .click-to-start {
+            color: var(--primary-green) !important;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.6; }
+            50% { opacity: 1; }
+            100% { opacity: 0.6; }
+        }
+
+        .score-label {
+            color: var(--primary-green);
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div class="title">Cannabinoid Receptor Game</div>
+        <div class="score"><span class="score-label">Score:</span> <span id="score">0</span></div>
+        <canvas id="gameCanvas" width="600" height="600"></canvas>
+        
+        <!-- Mobile Controls -->
+        <div class="mobile-controls">
+            <div class="mobile-move-controls">
+                <button class="mobile-btn" id="leftBtn">←</button>
+                <button class="mobile-btn" id="rightBtn">→</button>
+            </div>
+            <button class="mobile-btn" id="switchBtn">Switch</button>
+            <button class="mobile-btn" id="shootBtn">Shoot</button>
+        </div>
+
+        <div class="instructions">
+            <h2>How to Play</h2>
+            <div class="instructions-grid">
+                <div class="instruction-section">
+                    <h3>Controls</h3>
+                    <ul>
+                        <li>Use LEFT and RIGHT arrows to move</li>
+                        <li>Press SPACE to switch between THC and CBD</li>
+                        <li>Press X to shoot molecules upward</li>
+                        <li>Press M to toggle sound</li>
+                    </ul>
+                </div>
+                <div class="instruction-section">
+                    <h3>Game Rules</h3>
+                    <ul>
+                        <li>THC molecules only bind to CB1 receptors</li>
+                        <li>CBD molecules only bind to CB2 receptors</li>
+                        <li>Correct matches: +10 points</li>
+                        <li>Incorrect matches: -5 points</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <p class="click-to-start">Click anywhere to start the game music!</p>
+    </div>
+    <script src="game.js"></script>
+</body>
+</html> 
